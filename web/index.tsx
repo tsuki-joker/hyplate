@@ -3,11 +3,11 @@ import count from "./components/count/count.template";
 import { useCleanUp, useEvent, useRef, useAnchor, useChildView } from "../dist/hooks.js";
 import { query as computed, source as ref } from "../dist/store.js";
 import { For, Show } from "../dist/directive.js";
-import { text, bindEvent, appendChild, select, anchorRef, bindAttr, after, seqAfter } from "../dist/core.js";
+import { text, bindEvent, appendChild, select, anchor, bindAttr, seqAfter } from "../dist/core.js";
 import { jsxRef } from "../dist/jsx-runtime.js";
 function main() {
-  const t1 = anchorRef("t1");
-  const t2 = anchorRef("t2");
+  const t1 = anchor("t1");
+  const t2 = anchor("t2");
   const app = select("div#app");
   const resetBtn = select("button#reset");
   const unmountBtn = select("button#unmount");
@@ -128,6 +128,22 @@ function main() {
             );
           }}
         </For>
+        <svg version="1.1" width="300" height="200">
+          <rect width="100%" height="100%" fill="red" />
+          <circle cx="150" cy="100" r="80" fill="green" />
+          <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">
+            SVG
+          </text>
+          <svg viewBox="0 0 20 10">
+            <circle cx="5" cy="5" r="4">
+              <title>I'm a circle</title>
+            </circle>
+
+            <rect x="11" y="1" width="8" height="8">
+              <title>I'm a square</title>
+            </rect>
+          </svg>
+        </svg>
       </>
     )(seqAfter(oddDisabledBtn));
 

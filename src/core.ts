@@ -14,6 +14,9 @@ import { comment } from "./internal.js";
 
 export const element = document.createElement.bind(document);
 
+export const svg: <K extends keyof SVGElementTagNameMap>(name: K) => SVGElementTagNameMap[K] = (name) =>
+  document.createElementNS("http://www.w3.org/2000/svg", name);
+
 export const docFragment = document.createDocumentFragment.bind(document);
 
 export const clone = <N extends Node>(node: N): N => node.cloneNode(true) as N;
@@ -26,7 +29,8 @@ export const select: {
   <S extends string>(selecor: S): ParseSelector<S> | null;
 } = <S extends string>(host: ParentNode | S, selecor?: S): ParseSelector<S> | null =>
   isString(host) ? document.querySelector(host) : host.querySelector(selecor!);
-export const anchorRef: {
+
+export const anchor: {
   (hid: string): HTMLTemplateElement | null;
   (owner: ParentNode, hid: string): Element | null;
 } = (p1, p2?) => {
@@ -36,7 +40,7 @@ export const anchorRef: {
   return p1.querySelector(`[\\#${p2}]`);
 };
 
-export const $ = anchorRef;
+export const $ = anchor;
 
 export const $$ = <S extends string>(host: ParentNode, selector: S): ParseSelector<S>[] =>
   Array.from(host.querySelectorAll(selector));
