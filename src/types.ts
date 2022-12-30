@@ -16,6 +16,15 @@ export type AnyFunc = (...args: any[]) => any;
 
 export type CleanUpFunc = () => void;
 
+// @ts-ignore unused type parameter for geneic extension
+export interface Subscribable<T> {
+
+}
+
+export type SubscribeFunc = <T>(subscribable: Subscribable<T>, subscriber: Subscriber<T>) => CleanUpFunc;
+
+export type SubscribableTester = (value: unknown) => value is Subscribable<unknown>;
+
 export interface Query<T extends unknown> {
   readonly val: T;
 }
@@ -112,8 +121,7 @@ export type ContextSetupFactory<Context extends {}, S extends string> = <P exten
   name?: string
 ) => FunctionalComponent<P, undefined | SlotMap<S>, E>;
 
-export interface TemplateContext<T, R> {
-  templates: T;
+export interface TemplateContext<R> {
   refs: R;
 }
 

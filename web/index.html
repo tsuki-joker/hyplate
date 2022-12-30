@@ -8,6 +8,9 @@
     <script src="./setup.js"></script>
     <link rel="stylesheet" type="text/css" href="./index.css" />
     <title>hyplate example</title>
+    <script type="importmap">
+      { "imports": { "hyplate/": "/dist/" } }
+    </script>
   </head>
   <body>
     <div id="app"></div>
@@ -24,7 +27,7 @@
         }
         .row {
           width: 360px;
-          display:flex;
+          display: flex;
           justify-content: space-between;
         }
       </style>
@@ -40,6 +43,6 @@
       <button id="reset">reset count</button>
       <button id="unmount">unmount</button>
     </p>
-    <script type="module" src="./bundle.js"></script>
+    <script type="module" src="./index.js"></script>
   </body>
 </html>

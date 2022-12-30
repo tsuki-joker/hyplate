@@ -7,9 +7,7 @@ import {
   appendChild,
   attr,
   before,
-  bindAttr,
-  bindEvent,
-  bindText,
+  listen,
   clone,
   docFragment,
   element,
@@ -19,9 +17,8 @@ import {
   select,
   seqAfter,
   svg,
-  text,
+  text
 } from "../dist/core";
-import { source } from "../dist/store";
 import { template } from "../dist/template";
 
 describe("core.ts", () => {
@@ -70,6 +67,14 @@ describe("core.ts", () => {
     });
   });
 
+  describe("text content", () => {
+    it("should insert text content", () => {
+      const span = document.createElement("span");
+      text(span, "the content");
+      expect(span.textContent).toBe("the content");
+    });
+  });
+
   describe("select", () => {
     it("should select element in DOM subtree by CSS selector", () => {
       const container = document.createElement("div");
@@ -113,12 +118,26 @@ describe("core.ts", () => {
   });
 
   describe("$", () => {
-    it("should be alias of `anchorRef`", () => {
-      expect($).toBe(anchor);
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+    it("should perform `querySelector`", () => {
+      const node = element("div");
+      const list = [];
+      for (let i = 0; i < 10; i++) {
+        const p = element("p");
+        list.push(p);
+        appendChild(node)(p);
+      }
+      appendChild(document.body)(node);
+      expect($("p")).toBe(list[0]);
     });
   });
 
   describe("$$", () => {
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
     it("should perform `querySelectorAll`", () => {
       const node = element("div");
       const list = [];
@@ -127,80 +146,16 @@ describe("core.ts", () => {
         list.push(p);
         appendChild(node)(p);
       }
-      expect($$(node, "p")).toStrictEqual(list);
+      appendChild(document.body)(node);
+      expect($$("p")).toStrictEqual(list);
     });
   });
 
-  describe("bindText", () => {
-    it("should bind textContent", () => {
-      const data = source("1");
-      const p = element("p");
-      bindText(p, data);
-      expect(p.textContent).toBe("1");
-      data.set("2");
-      expect(p.textContent).toBe("2");
-    });
-  });
-
-  describe("text", () => {
-    it("should bind textContent with reactive store", () => {
-      const p = document.createElement("p");
-      const a1 = source(1);
-      const fn = text`print: ${a1}`(appendChild(p));
-      expect(p.textContent).toBe("print: 1");
-      a1.set(2);
-      expect(p.textContent).toBe("print: 2");
-      fn();
-    });
-
-    it("should insert text with primitive values", () => {
-      const p = document.createElement("p");
-      const content = "1";
-      const fn = text`print: ${content}`(appendChild(p));
-      expect(p.textContent).toBe("print: 1");
-      fn();
-    });
-
-    it("should emit error when called with invalid templates arguments", () => {
-      const fn = import.meta.jest.spyOn(console, "error");
-      fn.mockImplementation(() => {});
-      // @ts-expect-error invalid usage
-      text(["111", "222", "333"], "");
-      expect(fn).toBeCalled();
-      fn.mockReset();
-      fn.mockRestore();
-    });
-
-    it("should emit error when called with non-reactive object child expression", () => {
-      const fn = import.meta.jest.spyOn(console, "error");
-      fn.mockImplementation(() => {});
-      // @ts-expect-error invalid usage
-      text(["111", "222"], {});
-      expect(fn).toBeCalled();
-      fn.mockReset();
-      fn.mockRestore();
-    });
-  });
-
-  describe("bindAttr", () => {
-    it("should bind attribute", () => {
-      const disabled = source(false);
-      const button = document.createElement("button");
-      const cleanup = bindAttr(button, "disabled", disabled);
-      expect(button.disabled).toBeFalsy();
-      disabled.set(true);
-      expect(button.disabled).toBeTruthy();
-      cleanup();
-      disabled.set(false);
-      expect(button.disabled).toBeTruthy();
-    });
-  });
-
-  describe("bindEvent", () => {
+  describe("listen", () => {
     it("should bind event", () => {
       const fn = import.meta.jest.fn();
       const buttonElement = document.createElement("button");
-      const cleanup = bindEvent(buttonElement)("click", fn);
+      const cleanup = listen(buttonElement)("click", fn);
       buttonElement.click();
       expect(fn).toBeCalledTimes(1);
       buttonElement.click();
